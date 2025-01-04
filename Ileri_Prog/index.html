@@ -78,29 +78,29 @@ body {
   align-items: center;
 }
 
-@media (max-width: 768px) {
+@media (max-width >= 950px ) {
   .button, .carpma, #speed-info, .p {
-    font-size: 16px; /* Butonlar için daha büyük yazı */
-    padding: 12px 20px; /* Buton boyutunu artırır */
+    font-size: 16px; 
+    padding: 12px 50px; 
   }
 
   canvas {
-    width: 90%;
+    width: 100%;
     height: auto;
   }
 
   #control {
-    gap: 15px; /* Aralıkları artırır */
+    gap: 15px; 
   }
 
   #game-container {
     padding: 5px;
-    width: 100%; /* Tüm genişliği kaplar */
+    width: 100%; 
     box-sizing: border-box; /* İçeriğin taşmasını engeller */
   }
 }
 
-@media (max-width: 480px) {
+@media (max-width<= 360px) {
   body {
     padding: 5px;
   }
@@ -111,7 +111,7 @@ body {
   }
 
   .button, .carpma, #speed-info, .p {
-    font-size: 14px; /* Butonlar için yeterince büyük */
+    font-size: 14px; 
     padding: 10px 15px;
   }
 
@@ -123,9 +123,10 @@ body {
   #control {
     flex-direction: column;
     align-items: center;
-    gap: 12px; /* Aralıkları artırır */
+    gap: 12px; 
   }
 }
+
 
 
   </style> 
