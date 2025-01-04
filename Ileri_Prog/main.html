@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LABİRENT OYUNU</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+     body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #0006a2;
+    font-family: Arial, sans-serif;
+  }
+
+  #game-container {
+    text-align: center;
+    width: 100%;
+    max-width: 480px;
+    padding: 10px;
+  }
+
+  canvas {
+    display: block;
+    margin: 0 auto;
+    width: 100%;
+    height: auto;
+  }
+
+  .btnClass, .btnClass2 {
+    margin-left: 0;
+  }
+
+  #control {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+
+  .button, .carpma, #speed-info, .p {
+    background-color: #0f1011;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 5px;
+  }
+
+  .button:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+  }
+
+  .button:active {
+    background-color: #003f7f;
+    transform: scale(1);
+  }
+
+  /* Media queries for responsiveness */
+  @media (max-width: 768px) {
+    .button, .carpma, #speed-info, .p {
+      font-size: 14px;
+      padding: 10px 15px;
+    }
+
+    canvas {
+      width: 90%;
+      height: auto;
+    }
+
+    #control {
+      gap: 10px;
+    }
+
+    #game-container {
+      padding: 10px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    body {
+      flex-direction: column;
+      padding: 10px;
+    }
+
+    #game-container {
+      width: 100%;
+      padding: 5px;
+    }
+
+    .button, .carpma, #speed-info, .p {
+      font-size: 12px;
+      padding: 8px 10px;
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+    }
+
+    #control {
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+  }
+
+
+
+  </style> 
+
+</head>
+
+<body>
+
+  </div>
+  
+  <div id="game-container">
+    <div id ="speed-info">
+      <p>Başlangıç Hızı: Orta</p>
+    </div>
+    
+    <div id = "control">
+
+    <button id="slow" class="button">Yavaş</button>
+    <button id="medium" class="button">Orta</button>
+    <button id="fast" class="button">Hızlı</button>
+    </div>
+
+    <canvas id="labirent" width="400" height="360"></canvas>
+    
+    <p>
+      <button class="button" id="up">↑</button>
+    </p>
+    <p>
+      <button class="button" id="left">←</button>
+      <button class = "button" id="right">→</button>
+    </p>
+    <p>
+      <button class="button" id="down">↓</button>
+    </p>
+
+    <p class = "carpma">Toplam Çarpma Sayısı: <span id="carpma-sayisi">0</span></p>
+
+  </div>
+ 
+  
+  <script>
+    // move karakter için başta değişken tanımı
+    let stepSize = 3;
+    let dx = stepSize;
+    let dy = 0;
+    let hiz = 30;
+
+    // Canvas elemanını al
+    var canvas = document.getElementById('labirent');
+    // Canvas elemanının 2D contextini al
+    var ctx = canvas.getContext('2d');
+    // Düğmeleri dinle
+    document.getElementById('left').addEventListener('click', function () {
+      // Sol düğmeye basıldı
+      dx = -stepSize
+      dy = 0
+      // Labirenti tekrar çiz
+      renderLabirent();
+    });
+    document.getElementById('up').addEventListener('click', function () {
+      // Yukarı düğmeye basıldı
+      dx = 0
+      dy = -stepSize
+      // Labirenti tekrar çiz
+      renderLabirent();
+    });
+    document.getElementById('right').addEventListener('click', function () {
+      // Sağ düğmeye basıldı
+      dx = stepSize
+      dy = 0
+      // Labirenti tekrar çiz
+      renderLabirent();
+    });
+    document.getElementById('down').addEventListener('click', function () {
+      // Aşağı düğmeye basıldı
+      dx = 0
+      dy = stepSize
+      // Labirenti tekrar çiz
+      renderLabirent();
+    });
+
+
+
+
+    document.getElementById("slow").addEventListener("click", () => {
+    hiz = 45; // Daha yavaş hareket
+    endGame = 1;
+    document.getElementById("speed-info").textContent = "Seçilen hız: Yavaş";
+    highlightButton("slow");
+});
+
+document.getElementById("medium").addEventListener("click", () => {
+    hiz = 30; // Orta hız
+    endGame = 1;
+    document.getElementById("speed-info").textContent = "Seçilen hız: Orta";
+    highlightButton("medium");
+});
+
+document.getElementById("fast").addEventListener("click", () => {
+    hiz = 18; // Daha hızlı hareket
+    endGame = 1;
+    document.getElementById("speed-info").textContent = "Seçilen hız: Hızlı";
+    highlightButton("fast");
+});
+
+function highlightButton(selectedId) {
+    // Tüm butonların arka planını sıfırla
+    document.querySelectorAll(".button").forEach(button => {
+        button.style.backgroundColor = ""; // Varsayılan arka plan
+    });
+    // Seçilen butonun arka planını yeşil yap
+    document.getElementById(selectedId).style.backgroundColor = "green";
+}
+
+
+    var duvarHeight = 40
+    var duvarWidth = 40
+    //bitişi tut
+    var finalPointX
+    var finalPointY
+    // Karakteri oluştur
+    var karakter = {
+      x: 50,
+      y: 44,
+      width: 25,
+      height: 25
+    };
+    var bolum = 1
+    // Labirenti oluştur
+    if (bolum === 1) {
+      alert("YÖN TUŞLARINI KULLANARAK ELMAYA ULAŞ!!\nHIZ BUTONUNA BASILDIĞINDA KARAKTER BAŞA DÖNER");
+      var labirent =
+        [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+    [1, 0, 1, 0, 1, 1, 1, 1, 0, 1],
+    [1, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+    [1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 2, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+    }
+
+    function renderLabirent() {
+  var elmaImage = new Image();
+  elmaImage.src = 'elma.png';
+
+  var pacmanImage = new Image();
+  pacmanImage.src = 'pacman.webp';
+
+  // Canvası temizle
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Labirenti çiz
+  for (var i = 0; i < labirent.length; i++) {
+    for (var j = 0; j < labirent[i].length; j++) {
+      if (labirent[i][j] === 1) {
+        // Duvar çiz
+        ctx.fillStyle = '#0006a2';
+        ctx.fillRect(j * duvarWidth, i * duvarHeight, duvarWidth, duvarHeight);
+      } else if (labirent[i][j] === 0) {
+        // Yol çiz
+        ctx.fillStyle = '#c5c1c1';
+        ctx.fillRect(j * duvarWidth, i * duvarHeight, duvarWidth, duvarHeight);
+      } else if (labirent[i][j] === 2) {
+        // Yol ve elma çiz
+        ctx.fillStyle = '#c5c1c1';
+        ctx.fillRect(j * duvarWidth, i * duvarHeight, duvarWidth, duvarHeight);
+        ctx.drawImage(elmaImage, j * duvarWidth, i * duvarHeight, duvarWidth, duvarHeight);
+      }
+    }
+  }
+
+  // Karakteri çiz (Pacman)
+  ctx.drawImage(pacmanImage, karakter.x, karakter.y, karakter.width, karakter.height);
+}
+
+
+    var endGame = 0
+    var collisionCount = 0;
+    // Karakteri hareket ettir
+    function moveKarakter(dx, dy) {
+      // Yeni konumu hesapla
+      var newX = karakter.x + dx;
+      var newY = karakter.y + dy;
+
+      for (var i = 0; i < labirent.length; i++) {
+        for (var j = 0; j < labirent[i].length - 1; j++) {
+
+          if (labirent[j][i] === 1) {
+            // i * duvarWidth = duvarın kordinatı 
+            if ((newX < i * duvarWidth + duvarWidth && newX + karakter.width > i * duvarWidth) && 
+                (newY < j * duvarHeight + duvarHeight && newY + karakter.height > j * duvarHeight)) {
+              console.log("i= " + i + "  j= " + j)
+              collisionCount++
+              console.log(collisionCount);
+              endGame = 1
+              document.getElementById('carpma-sayisi').innerText = collisionCount;
+
+              document.body.style.backgroundColor = 'red';
+              setTimeout(() => {
+              document.body.style.backgroundColor = '';
+              }, 400);
+              break
+            }
+          }
+          
+          else if (labirent[j][i] === 2) {
+            finalPointX = i * duvarWidth
+            finalPointY = j * duvarHeight
+            if ((newX < finalPointX + 15 && newX + karakter.width > finalPointX) && 
+                (newY < finalPointY + 15 && newY + karakter.height > finalPointY)) {
+              endGame = 3
+              
+              break
+            }
+          }
+        }
+        if (endGame === 1 || endGame === 3) {
+          break
+        }
+      }
+      // Labirentin sınırlarını kontrol et -- 50 karakter.x ve y -- 70 ise karakter.x + hareket boyutu
+      if (newX >= duvarWidth && newX <= canvas.width - (70) && 
+          newY >= duvarHeight && newY <= canvas.height - (70) && endGame === 0) {
+        // Labirentin içinde ise konumu güncelle
+        karakter.x = newX;
+        karakter.y = newY;
+      } else if (!(newX >= duvarWidth && newX <= canvas.width - (70) && 
+                   newY >= duvarHeight && newY <= canvas.height - (70) && endGame === 0) && endGame !== 3) {
+
+        karakter.x = newX;
+        karakter.y = newY;
+        stop();
+        setTimeout(() => {
+          karakter.x = 50
+          karakter.y = 44
+          endGame = 0
+          renderLabirent()
+          start();
+
+        }
+          , 10);
+
+      } else if (endGame === 3 && bolum === 1) {
+    alert("TEBRİKLER! 1.BÖLÜM TAMAMLANDI. 2. BÖLÜME GEÇİLİYOR...");
+    karakter.x = 50;
+    karakter.y = 44;
+    stop();
+    setTimeout(() => {
+        bolum = 2;
+        labirent = [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+    [1, 0, 0, 0, 1, 0, 0, 0, 1, 1],
+    [1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1, 2, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+        endGame = 0;
+        renderLabirent();
+        start();
+    }, 10);
+} 
+
+else if (endGame === 3 && bolum === 2) {
+  alert("TEBRİKLER! 2.BÖLÜM TAMAMLANDI. 3. BÖLÜME GEÇİLİYOR...");
+    karakter.x = 50;
+    karakter.y = 44;
+    stop();
+    setTimeout(() => {
+        bolum = 3;
+        labirent = [
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+            [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+            [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+            [1, 0, 0, 0, 1, 0, 0, 0, 2, 1],
+            [1, 1, 1, 0, 1, 1, 1, 1, 1, 1],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+        endGame = 0;
+        renderLabirent();
+        start();
+    }, 10);
+}
+
+else if (endGame === 3 && bolum === 3) {
+  alert("TEBRİKLER! 3.BÖLÜM TAMAMLANDI. 4. BÖLÜME GEÇİLİYOR...");
+    karakter.x = 50;
+    karakter.y = 44;
+    stop();
+    setTimeout(() => {
+        bolum = 4;
+        labirent = [
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+    [1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
+    [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+    [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+    [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+    [1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
+    [1, 0, 0, 0, 1, 0, 0, 0, 2, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        ];
+        endGame = 0;
+        renderLabirent();
+        start();
+    }, 10);
+} 
+
+
+else if (endGame === 3 && bolum === 4) {
+  alert("TEBRİKLER! 4.BÖLÜM TAMAMLANDI. 5. BÖLÜME GEÇİLİYOR...");
+    karakter.x = 50;
+    karakter.y = 44;
+    stop();
+    setTimeout(() => {
+        bolum = 5;
+         labirent =
+         [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+     [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+     [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+     [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+     [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+     [1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+     [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
+     [1, 0, 0, 0, 0, 1, 0, 0, 2, 1],
+     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+
+        endGame = 0;
+        renderLabirent();
+        start();
+    }, 10);}
+
+
+
+    else if (endGame === 3 && bolum === 5) {
+      if(collisionCount <= 5){
+        alert("TEBRİKLER! OYUNU "+collisionCount+" DEFA ÇARPARAK EN İYİ PERFORMANSLA TAMAMLADINIZ...");
+      }
+    else if(collisionCount > 5 && collisionCount <= 10){
+      alert("TEBRİKLER! OYUNU "+collisionCount+" DEFA ÇARPARAK ORTA PERFORMANSLA TAMAMLADINIZ...");
+    }
+    else{
+      alert("TEBRİKLER! OYUNU "+collisionCount+" DEFA ÇARPARAK KÖTÜ PERFORMANSLA TAMAMLADINIZ...");
+    }
+    karakter.x = 50;
+    karakter.y = 44;
+    stop();
+    const button = document.createElement("button");
+      button.textContent = "Tekrar Oyna";
+      button.style.marginTop = "20px";
+      button.onclick = function () {
+        location.reload(); 
+      };
+      button.style.padding = "10px 20px";
+      button.style.backgroundColor = "#4CAF50";
+      button.style.color = "white";
+      button.style.border = "none";
+      button.style.fontSize = "16px";
+      button.style.cursor = "pointer";
+      button.style.borderRadius = "5px";
+
+
+      const container = document.getElementById("game-container");
+      container.appendChild(button);
+    
+}
+      
+    }
+
+    // Yön tuşlarını dinle
+    document.addEventListener('keydown', function (event) {
+      if (event.keyCode === 37) {
+        // Sol yön tuşuna basıldı
+        dx = -stepSize
+        dy = 0
+      } else if (event.keyCode === 38) {
+        // Yukarı yön tuşuna basıldı
+        dx = 0
+        dy = -stepSize
+      } else if (event.keyCode === 39) {
+        dx = stepSize
+        dy = 0
+        // Sağ yön tuşuna basıldı
+      } else if (event.keyCode === 40) {
+        dx = 0
+        dy = stepSize
+        // Aşağı yön tuşuna basıldı
+      }
+
+      // Labirenti tekrar çiz
+      renderLabirent();
+    });
+    
+    let interval
+    function start() {  
+      interval = setInterval(function () {
+        moveKarakter(dx, dy);
+        renderLabirent();
+      }, hiz);
+    };
+    function stop() {
+      dx = stepSize
+      dy = 0
+      clearInterval(interval);
+    };
+    renderLabirent();
+    start()
+
+    
+  </script>
+</body>
+
+</html>
