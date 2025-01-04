@@ -8,6 +8,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LABİRENT OYUNU</title>
   <link rel="stylesheet" href="style.css">
+
+  <!-- Gerekli css kodları -->
   <style>
      body {
     display: flex;
@@ -50,7 +52,7 @@
     color: #fff;
     border: none;
     border-radius: 10px;
-    padding: 12px 40px;
+    padding: 12px 50px;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
@@ -68,55 +70,63 @@
     transform: scale(1);
   }
 
-  /* Media queries for responsiveness */
-  @media (max-width: 768px) {
-    .button, .carpma, #speed-info, .p {
-      font-size: 14px;
-      padding: 10px 15px;
-    }
+/* responsive */
+body {
+  margin: 0;
+  overflow: hidden; /* Scroll'u engeller */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    canvas {
-      width: 90%;
-      height: auto;
-    }
-
-    #control {
-      gap: 10px;
-    }
-
-    #game-container {
-      padding: 10px;
-    }
+@media (max-width: 768px) {
+  .button, .carpma, #speed-info, .p {
+    font-size: 16px; /* Butonlar için daha büyük yazı */
+    padding: 12px 20px; /* Buton boyutunu artırır */
   }
 
-  @media (max-width: 480px) {
-    body {
-      flex-direction: column;
-      padding: 10px;
-    }
-
-    #game-container {
-      width: 100%;
-      padding: 5px;
-    }
-
-    .button, .carpma, #speed-info, .p {
-      font-size: 12px;
-      padding: 8px 10px;
-    }
-
-    canvas {
-      width: 100%;
-      height: auto;
-    }
-
-    #control {
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-    }
+  canvas {
+    width: 90%;
+    height: auto;
   }
 
+  #control {
+    gap: 15px; /* Aralıkları artırır */
+  }
+
+  #game-container {
+    padding: 5px;
+    width: 100%; /* Tüm genişliği kaplar */
+    box-sizing: border-box; /* İçeriğin taşmasını engeller */
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 5px;
+  }
+
+  #game-container {
+    width: 100%;
+    padding: 0; /* Ekstra boşlukları kaldırır */
+  }
+
+  .button, .carpma, #speed-info, .p {
+    font-size: 14px; /* Butonlar için yeterince büyük */
+    padding: 10px 15px;
+  }
+
+  canvas {
+    width: 100%;
+    height: auto;
+  }
+
+  #control {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px; /* Aralıkları artırır */
+  }
+}
 
 
   </style> 
@@ -138,7 +148,8 @@
     <button id="medium" class="button">Orta</button>
     <button id="fast" class="button">Hızlı</button>
     </div>
-
+    
+    <!-- Labirent boyutu -->
     <canvas id="labirent" width="400" height="360"></canvas>
     
     <p>
@@ -158,42 +169,43 @@
  
   
   <script>
-    // move karakter için başta değişken tanımı
-    let stepSize = 3;
-    let dx = stepSize;
+    // Karakterin başlangıç değişkenleri
+    let adimSayi = 3;
+    let dx = adimSayi;
     let dy = 0;
     let hiz = 30;
 
-    // Canvas elemanını al
+    // Canvas elemanı
     var canvas = document.getElementById('labirent');
     // Canvas elemanının 2D contextini al
     var ctx = canvas.getContext('2d');
-    // Düğmeleri dinle
+    
+    // Butonları dinleme
     document.getElementById('left').addEventListener('click', function () {
-      // Sol düğmeye basıldı
-      dx = -stepSize
+      // Sol buton
+      dx = -adimSayi
       dy = 0
       // Labirenti tekrar çiz
       renderLabirent();
     });
     document.getElementById('up').addEventListener('click', function () {
-      // Yukarı düğmeye basıldı
+      // Yukarı Butona basıldı
       dx = 0
-      dy = -stepSize
+      dy = -adimSayi
       // Labirenti tekrar çiz
       renderLabirent();
     });
     document.getElementById('right').addEventListener('click', function () {
-      // Sağ düğmeye basıldı
-      dx = stepSize
+      // Sağ butona basıldı
+      dx = adimSayi
       dy = 0
       // Labirenti tekrar çiz
       renderLabirent();
     });
     document.getElementById('down').addEventListener('click', function () {
-      // Aşağı düğmeye basıldı
+      // Aşağı Butona basıldı
       dx = 0
-      dy = stepSize
+      dy = adimSayi
       // Labirenti tekrar çiz
       renderLabirent();
     });
@@ -225,7 +237,7 @@ document.getElementById("fast").addEventListener("click", () => {
 function highlightButton(selectedId) {
     // Tüm butonların arka planını sıfırla
     document.querySelectorAll(".button").forEach(button => {
-        button.style.backgroundColor = ""; // Varsayılan arka plan
+        button.style.backgroundColor = ""; 
     });
     // Seçilen butonun arka planını yeşil yap
     document.getElementById(selectedId).style.backgroundColor = "green";
@@ -237,7 +249,7 @@ function highlightButton(selectedId) {
     //bitişi tut
     var finalPointX
     var finalPointY
-    // Karakteri oluştur
+    // Karakterin boyutları
     var karakter = {
       x: 50,
       y: 44,
@@ -250,22 +262,21 @@ function highlightButton(selectedId) {
       alert("YÖN TUŞLARINI KULLANARAK ELMAYA ULAŞ!!\nHIZ BUTONUNA BASILDIĞINDA KARAKTER BAŞA DÖNER");
       var labirent =
         [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 1, 0, 1, 0, 1, 0, 1],
-    [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 1, 1, 1, 0, 1],
-    [1, 0, 0, 0, 1, 1, 0, 0, 0, 1],
-    [1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 2, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
-    }
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 1, 1, 1, 0, 1],
+        [1, 0, 0, 0, 1, 1, 0, 0, 0, 1],
+        [1, 1, 1, 0, 1, 1, 0, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 2, 1],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];}
 
-    function renderLabirent() {
-  var elmaImage = new Image();
-  elmaImage.src = 'elma.png';
+function renderLabirent() {
+    var elmaImage = new Image();
+    elmaImage.src = 'elma.png';
 
-  var pacmanImage = new Image();
-  pacmanImage.src = 'pacman.webp';
+    var pacmanImage = new Image();
+    pacmanImage.src = 'pacman.webp';
 
   // Canvası temizle
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -296,7 +307,7 @@ function highlightButton(selectedId) {
 
 
     var endGame = 0
-    var collisionCount = 0;
+    var carpmaSayisi = 0;
     // Karakteri hareket ettir
     function moveKarakter(dx, dy) {
       // Yeni konumu hesapla
@@ -310,11 +321,12 @@ function highlightButton(selectedId) {
             // i * duvarWidth = duvarın kordinatı 
             if ((newX < i * duvarWidth + duvarWidth && newX + karakter.width > i * duvarWidth) && 
                 (newY < j * duvarHeight + duvarHeight && newY + karakter.height > j * duvarHeight)) {
-              console.log("i= " + i + "  j= " + j)
-              collisionCount++
-              console.log(collisionCount);
+
+              //console.log("i= " + i + "  j= " + j)
+              carpmaSayisi++
+              //console.log(carpmaSayisi);
               endGame = 1
-              document.getElementById('carpma-sayisi').innerText = collisionCount;
+              document.getElementById('carpma-sayisi').innerText = carpmaSayisi;
 
               document.body.style.backgroundColor = 'red';
               setTimeout(() => {
@@ -369,16 +381,16 @@ function highlightButton(selectedId) {
     setTimeout(() => {
         bolum = 2;
         labirent = [
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-    [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 1, 1],
-    [1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1, 2, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ];
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+          [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+          [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+          [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+          [1, 0, 0, 0, 1, 0, 0, 0, 1, 1],
+          [1, 1, 1, 0, 1, 1, 1, 0, 0, 1],
+          [1, 0, 0, 0, 0, 0, 0, 1, 2, 1],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]  ];
+
         endGame = 0;
         renderLabirent();
         start();
@@ -393,16 +405,16 @@ else if (endGame === 3 && bolum === 2) {
     setTimeout(() => {
         bolum = 3;
         labirent = [
-        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-            [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-            [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-            [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
-            [1, 0, 0, 0, 1, 0, 0, 0, 2, 1],
-            [1, 1, 1, 0, 1, 1, 1, 1, 1, 1],
-            [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ];
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+          [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+          [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+          [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+          [1, 0, 0, 0, 1, 0, 0, 0, 2, 1],
+          [1, 1, 1, 0, 1, 1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+
         endGame = 0;
         renderLabirent();
         start();
@@ -417,17 +429,17 @@ else if (endGame === 3 && bolum === 3) {
     setTimeout(() => {
         bolum = 4;
         labirent = [
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
-    [1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
-    [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
-    [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-    [1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
-    [1, 0, 0, 0, 1, 0, 0, 0, 2, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ];
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 0, 0, 1, 0, 0, 1],
+          [1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
+          [1, 0, 1, 0, 0, 0, 0, 1, 0, 1],
+          [1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+          [1, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+          [1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
+          [1, 0, 0, 0, 1, 0, 0, 0, 2, 1],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+
         endGame = 0;
         renderLabirent();
         start();
@@ -442,16 +454,16 @@ else if (endGame === 3 && bolum === 4) {
     stop();
     setTimeout(() => {
         bolum = 5;
-         labirent =
-         [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-     [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-     [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-     [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-     [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
-     [1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
-     [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
-     [1, 0, 0, 0, 0, 1, 0, 0, 2, 1],
-     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+        labirent =[
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+          [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+          [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+          [1, 0, 1, 1, 1, 0, 1, 0, 1, 1],
+          [1, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+          [1, 1, 1, 0, 1, 1, 1, 0, 1, 1],
+          [1, 0, 0, 0, 0, 1, 0, 0, 2, 1],
+          [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
 
         endGame = 0;
         renderLabirent();
@@ -461,18 +473,19 @@ else if (endGame === 3 && bolum === 4) {
 
 
     else if (endGame === 3 && bolum === 5) {
-      if(collisionCount <= 5){
-        alert("TEBRİKLER! OYUNU "+collisionCount+" DEFA ÇARPARAK EN İYİ PERFORMANSLA TAMAMLADINIZ...");
+      if(carpmaSayisi <= 5){
+        alert("TEBRİKLER! OYUNU "+carpmaSayisi+" DEFA ÇARPARAK EN İYİ PERFORMANSLA TAMAMLADINIZ...");
       }
-    else if(collisionCount > 5 && collisionCount <= 10){
-      alert("TEBRİKLER! OYUNU "+collisionCount+" DEFA ÇARPARAK ORTA PERFORMANSLA TAMAMLADINIZ...");
+    else if(carpmaSayisi > 5 && carpmaSayisi <= 10){
+      alert("TEBRİKLER! OYUNU "+carpmaSayisi+" DEFA ÇARPARAK ORTA PERFORMANSLA TAMAMLADINIZ...");
     }
     else{
-      alert("TEBRİKLER! OYUNU "+collisionCount+" DEFA ÇARPARAK KÖTÜ PERFORMANSLA TAMAMLADINIZ...");
+      alert("TEBRİKLER! OYUNU "+carpmaSayisi+" DEFA ÇARPARAK KÖTÜ PERFORMANSLA TAMAMLADINIZ...");
     }
     karakter.x = 50;
     karakter.y = 44;
     stop();
+    
     const button = document.createElement("button");
       button.textContent = "Tekrar Oyna";
       button.style.marginTop = "20px";
@@ -499,19 +512,19 @@ else if (endGame === 3 && bolum === 4) {
     document.addEventListener('keydown', function (event) {
       if (event.keyCode === 37) {
         // Sol yön tuşuna basıldı
-        dx = -stepSize
+        dx = -adimSayi
         dy = 0
       } else if (event.keyCode === 38) {
         // Yukarı yön tuşuna basıldı
         dx = 0
-        dy = -stepSize
+        dy = -adimSayi
       } else if (event.keyCode === 39) {
-        dx = stepSize
+        dx = adimSayi
         dy = 0
         // Sağ yön tuşuna basıldı
       } else if (event.keyCode === 40) {
         dx = 0
-        dy = stepSize
+        dy = adimSayi
         // Aşağı yön tuşuna basıldı
       }
 
@@ -527,7 +540,7 @@ else if (endGame === 3 && bolum === 4) {
       }, hiz);
     };
     function stop() {
-      dx = stepSize
+      dx = adimSayi
       dy = 0
       clearInterval(interval);
     };
